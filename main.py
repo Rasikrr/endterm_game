@@ -1,4 +1,3 @@
-import random
 import os
 
 import pygame
@@ -33,7 +32,7 @@ skins = conf.skins
 main_skin = conf.main_skin
 
 # Background
-background = conf.background
+backgrounds = conf.backgrounds
 obstacle = conf.obstacle
 
 # Menu pick
@@ -41,7 +40,7 @@ menu_pick = conf.menu_image
 
 game = Game( main_skin,
              obstacle,
-             background,
+             backgrounds,
              menu_pick, # Menu image
              screen,
              clock,
@@ -51,15 +50,20 @@ game = Game( main_skin,
 
 game.resize_images()
 
-# game.sounds[random.randint(1, len(sounds))].play()
 
-while game.menu_trigger or game.skins_trigger:
+while game.menu_trigger or game.skins_trigger or game.difficult_trigger:
     game.menu()
     game.change_skin()
 
 
 SPAWNPIPE = pygame.USEREVENT
-pygame.time.set_timer(SPAWNPIPE, 2000)
+
+SPAWNPIPE_TIME = {
+    "easy": 1800,
+    "medium": 1100,
+    "hard": 600
+}
+pygame.time.set_timer(SPAWNPIPE, SPAWNPIPE_TIME[game.level])
 
 while True:
     for event in pygame.event.get():
@@ -99,8 +103,12 @@ while True:
         mixer.music.set_volume(0.0)
 
     game.get_fps()
-    # game.show_ground()
-    game.move_location(1)
+    LOCATION_SPEED = {
+        "easy": 2,
+        "medium": 5,
+        "hard": 7
+    }
+    game.move_location(LOCATION_SPEED[game.level])
 
     pygame.display.update()
     clock.tick(120)

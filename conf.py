@@ -17,7 +17,7 @@ theme = sounds/"theme"/"music.mp3"
 
 
 level_images = root/"images"/"level"
-background = level_images/"jungle.jpg"
+backgrounds = level_images/"locations"
 obstacle = level_images/"pipe.png"
 menu_image = root/"images"/"menu_pick_2.jpg"
 

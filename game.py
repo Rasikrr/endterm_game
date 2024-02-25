@@ -8,14 +8,12 @@ import conf
 
 
 class Game:
-    def __init__(self, bird_img, bottom_pipe_img, background_img, menu_img, screen, clock, game_over_sounds_list, skins_path):
+    def __init__(self, bird_img, bottom_pipe_img, backgrounds, menu_img, screen, clock, game_over_sounds_list, skins_path):
         self.screen = screen
         self.bird = pygame.image.load(bird_img).convert_alpha()
-        self.bird_rect = pygame.Rect(200, 300, 100, 70)
+        self.bird_rect = pygame.Rect(100, 100, 100, 70)
         self.menu_img = pygame.image.load(menu_img).convert_alpha()
         self.bottom_pipe = pygame.image.load(bottom_pipe_img).convert_alpha()
-        self.background = pygame.image.load(background_img).convert_alpha()
-        # self.ground = pygame.image.load(ground_img).convert_alpha()
         self.ground_pos = 0
         self.background_pos = 0
         self.active = True
@@ -23,7 +21,7 @@ class Game:
         self.bird_movement = 0
         self.rotated_bird = pygame.Surface((0, 0))
         self.pipes = []
-        self.pipes_height = [280, 425, 562, 400, 300, 440, 278, 200, 342]
+        self.pipes_height = [280, 425, 562, 400, 300, 440, 342]
         self.font = pygame.font.SysFont(None, 48)
         self.score = 0
         self.high_score = 0
@@ -47,24 +45,31 @@ class Game:
         self.game_over_sounds = {i+1: mixer.Sound(fr"{self.game_over_sounds_path}\{name}") for i, name in enumerate(self.game_over_sounds_list)}
         self.skins = {i+1: pygame.image.load(f"{skins_path}\{name}") for i, name in enumerate(os.listdir(skins_path))}
         self.skins_trigger = False
+        self.difficult_trigger = False
+        self.levels_location = {
+            "easy": pygame.image.load(backgrounds/"jungle.jpg"),
+            "medium": pygame.image.load(backgrounds/"night_forest.jpg"),
+            "hard": pygame.image.load(backgrounds/"volcano.jpg")
+        }
+        self.background = self.levels_location["easy"]
         self.back_button = {"non pressed": pygame.image.load(fr"{self.path}\images\back.png"),
                             "pressed": pygame.image.load(fr"{self.path}\images\back_pressed.png")}
+        self.level = "easy"
+        self.move_pipes_speed = {
+            "easy": 4.3,
+            "medium": 4.3,
+            "hard": 8.7
+        }
 
     def resize_images(self):
-        # Don't forget to change rect
         self.bird = pygame.transform.scale(self.bird, (100, 70))  # 75, 55
         self.background = pygame.transform.scale(self.background, (1000, 720))
         self.bottom_pipe = pygame.transform.scale(self.bottom_pipe, (100, 650))
-        # self.ground = pygame.transform.scale(self.ground, (1000, 160))
         self.menu_img = pygame.transform.scale(self.menu_img, (250, 300))
 
     def show_background(self):
         self.screen.blit(self.background, (self.background_pos, 0))
         self.screen.blit(self.background, (self.background_pos + 1000, 0))
-
-    # def show_ground(self):
-    #     self.screen.blit(self.ground, (self.ground_pos, 630))
-    #     self.screen.blit(self.ground, (self.ground_pos + 1000, 630))
 
     def move_location(self, speed):
         self.ground_pos -= speed
@@ -89,7 +94,7 @@ class Game:
 
     def flap(self):
         self.bird_movement = 0
-        self.bird_movement -= 2.9
+        self.bird_movement -= 3.9
 
     def add_pipe(self):
         random_pipe_pos = random.choice(self.pipes_height)
@@ -100,7 +105,7 @@ class Game:
 
     def move_pipes(self):
         for pipe in self.pipes:
-            pipe.centerx -= 2.3
+            pipe.centerx -= self.move_pipes_speed[self.level]
             if pipe.centerx <= -50:
                 self.pipes.remove(pipe)
 
@@ -178,27 +183,27 @@ class Game:
             self.get_fps()
             self.screen.blit(self.menu_img, (380, 50))
 
-            # self.show_ground()
             self.author()
             self.move_location(0.1)
 
             pygame.draw.rect(self.screen, (112, 128, 144), play_rect, border_radius=25, width=5)
-            self.screen.blit(play_button, (play_rect.centerx-40, play_rect.centery-15))
+            self.screen.blit(play_button, (play_rect.centerx - 40, play_rect.centery - 15))
 
             pygame.draw.rect(self.screen, (112, 128, 144), skins_rect, border_radius=25, width=5)
-            self.screen.blit(skins_button, (skins_rect.centerx-45, skins_rect.centery-15))
+            self.screen.blit(skins_button, (skins_rect.centerx - 45, skins_rect.centery - 15))
 
             pygame.draw.rect(self.screen, (112, 128, 144), quit_rect, border_radius=25, width=5)
-            self.screen.blit(quit_button, (quit_rect.centerx-40, quit_rect.centery-15))
+            self.screen.blit(quit_button, (quit_rect.centerx - 40, quit_rect.centery - 15))
 
             mouse_pos = pygame.mouse.get_pos()
             mouse_click = pygame.mouse.get_pressed()
 
             if play_rect.collidepoint(mouse_pos):
                 pygame.draw.rect(self.screen, (112, 128, 144), play_rect, border_radius=25)
-                self.screen.blit(play_button, (play_rect.centerx-40, play_rect.centery - 15))
+                self.screen.blit(play_button, (play_rect.centerx - 40, play_rect.centery - 15))
                 if mouse_click[0]:
-                    self.menu_trigger = False
+                    self.difficult_trigger = True
+                    self.show_difficulty_menu()
 
             if skins_rect.collidepoint(mouse_pos):
                 pygame.draw.rect(self.screen, (112, 128, 144), skins_rect, border_radius=25)
@@ -214,6 +219,77 @@ class Game:
                     self.menu_trigger = False
                     pygame.quit()
                     sys.exit()
+
+            self.clock.tick(300)
+            pygame.display.flip()
+
+    def show_difficulty_menu(self):
+        easy_button = self.font.render("Easy", True, (0, 0, 0))
+        medium_button = self.font.render("Medium", True, (0, 0, 0))
+        hard_button = self.font.render("Hard", True, (0, 0, 0))
+
+        button_width = 200
+        button_height = 50
+        button_padding = 20
+
+        start_x = (1000 - (3 * button_width + 2 * button_padding)) // 2
+        start_y = 500
+
+        easy_rect = pygame.Rect(start_x, start_y, button_width, button_height)
+        medium_rect = pygame.Rect(start_x + button_width + button_padding, start_y, button_width, button_height)
+        hard_rect = pygame.Rect(start_x + 2 * (button_width + button_padding), start_y, button_width, button_height)
+
+        while self.difficult_trigger:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            self.show_background()
+            self.get_fps()
+            self.move_location(0.1)
+
+            pygame.draw.rect(self.screen, (112, 128, 144), easy_rect, border_radius=25, width=5)
+            self.screen.blit(easy_button, (easy_rect.centerx - 40, easy_rect.centery - 15))
+
+            pygame.draw.rect(self.screen, (112, 128, 144), medium_rect, border_radius=25, width=5)
+            self.screen.blit(medium_button, (medium_rect.centerx - 60, medium_rect.centery - 15))
+
+            pygame.draw.rect(self.screen, (112, 128, 144), hard_rect, border_radius=25, width=5)
+            self.screen.blit(hard_button, (hard_rect.centerx - 40, hard_rect.centery - 15))
+
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = pygame.mouse.get_pressed()
+
+            if easy_rect.collidepoint(mouse_pos):
+                pygame.draw.rect(self.screen, (112, 128, 144), easy_rect, border_radius=25)
+                self.screen.blit(easy_button, (easy_rect.centerx - 40, easy_rect.centery - 15))
+                if mouse_click[0]:
+                    self.background = self.levels_location["easy"]
+                    self.resize_images()
+                    self.difficult_trigger = False
+                    self.menu_trigger = False
+                    self.level = "easy"
+
+            if medium_rect.collidepoint(mouse_pos):
+                pygame.draw.rect(self.screen, (112, 128, 144), medium_rect, border_radius=25)
+                self.screen.blit(medium_button, (medium_rect.centerx - 60, medium_rect.centery - 15))
+                if mouse_click[0]:
+                    self.background = self.levels_location["medium"]
+                    self.resize_images()
+                    self.difficult_trigger = False
+                    self.menu_trigger = False
+                    self.level = "medium"
+
+            if hard_rect.collidepoint(mouse_pos):
+                pygame.draw.rect(self.screen, (112, 128, 144), hard_rect, border_radius=25)
+                self.screen.blit(hard_button, (hard_rect.centerx - 40, hard_rect.centery - 15))
+                if mouse_click[0]:
+                    self.background = self.levels_location["hard"]
+                    self.resize_images()
+                    self.difficult_trigger = False
+                    self.menu_trigger = False
+                    self.level = "hard"
 
             self.clock.tick(300)
             pygame.display.flip()
@@ -236,7 +312,7 @@ class Game:
 
     def author(self):
         author_name = self.font.render("Created by Amir, Rassul, Kaminur and Alima", True, (255, 255, 255))
-        rect = pygame.Rect(290, 660, 40, 10)
+        rect = pygame.Rect(285, 660, 40, 10)
         self.screen.blit(author_name, rect)
 
     def play_sounds(self):
@@ -272,7 +348,7 @@ class Game:
             self.author()
             self.move_location(0.1)
 
-            pygame.draw.rect(self.screen, (128, 128, 128), rect, border_radius=10)
+            pygame.draw.rect(self.screen, (128, 128, 128, 20), rect, border_radius=10)
             self.screen.blit(self.back_button["non pressed"], back_button_rect)
             self.screen.blit(skin,(rect.centerx-140, rect.centery-150))
 
