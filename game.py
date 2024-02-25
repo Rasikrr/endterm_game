@@ -4,20 +4,18 @@ import pygame
 import random
 import sys
 from pygame import mixer
-import time
-from collections import deque
+import conf
 
 
 class Game:
-    def __init__(self, bird_img, bottom_pipe_img, background_img, ground_img, menu_img, usb_c, screen, clock, sounds_list, game_over_sounds_list, skins):
+    def __init__(self, bird_img, bottom_pipe_img, background_img, menu_img, screen, clock, game_over_sounds_list, skins_path):
         self.screen = screen
         self.bird = pygame.image.load(bird_img).convert_alpha()
         self.bird_rect = pygame.Rect(200, 300, 100, 70)
         self.menu_img = pygame.image.load(menu_img).convert_alpha()
         self.bottom_pipe = pygame.image.load(bottom_pipe_img).convert_alpha()
         self.background = pygame.image.load(background_img).convert_alpha()
-        self.ground = pygame.image.load(ground_img).convert_alpha()
-        self.usb = pygame.image.load(usb_c).convert_alpha()
+        # self.ground = pygame.image.load(ground_img).convert_alpha()
         self.ground_pos = 0
         self.background_pos = 0
         self.active = True
@@ -32,20 +30,22 @@ class Game:
         self.menu_trigger = True
         self.clock = clock
         mixer.init()
-        self.colors = {"red":(255, 0, 0),
-                       "orange":(255, 153, 51),
-                       "yellow":(255, 255, 51),
-                       "green":(0, 255, 0)
+        self.colors = {"red": (255, 0, 0),
+                       "orange": (255, 153, 51),
+                       "yellow": (255, 255, 51),
+                       "green": (0, 255, 0)
                        }
         self.path = os.getcwd()
-        self.sounds_path = fr"{self.path}\sounds"
-        self.sounds_list = sounds_list
-        self.sounds = {i+1: mixer.Sound(fr"{self.sounds_path}/{name}") for i, name in enumerate(self.sounds_list)}
+        self.sounds_path = conf.in_game_sounds
+        self.sounds_list = os.listdir(self.sounds_path)
+        self.sounds = {"5_score": mixer.Sound(self.sounds_path/"5_score.mp3"),
+                       "20_score": mixer.Sound(self.sounds_path/"20_score.mp3")
+                       }
         self.sound_counter = 0
-        self.game_over_sounds_path = fr"{self.path}\game_over_sounds"
+        self.game_over_sounds_path = fr"{self.path}\sounds\game_over_sounds"
         self.game_over_sounds_list = game_over_sounds_list
         self.game_over_sounds = {i+1: mixer.Sound(fr"{self.game_over_sounds_path}\{name}") for i, name in enumerate(self.game_over_sounds_list)}
-        self.skins = {i+1: pygame.image.load(fr"{self.path}\images\skins\{name}") for i, name in enumerate(skins)}
+        self.skins = {i+1: pygame.image.load(f"{skins_path}\{name}") for i, name in enumerate(os.listdir(skins_path))}
         self.skins_trigger = False
         self.back_button = {"non pressed": pygame.image.load(fr"{self.path}\images\back.png"),
                             "pressed": pygame.image.load(fr"{self.path}\images\back_pressed.png")}
@@ -54,18 +54,17 @@ class Game:
         # Don't forget to change rect
         self.bird = pygame.transform.scale(self.bird, (100, 70))  # 75, 55
         self.background = pygame.transform.scale(self.background, (1000, 720))
-        self.bottom_pipe = pygame.transform.scale(self.bottom_pipe, (70, 650))
-        self.ground = pygame.transform.scale(self.ground, (1000, 160))
+        self.bottom_pipe = pygame.transform.scale(self.bottom_pipe, (100, 650))
+        # self.ground = pygame.transform.scale(self.ground, (1000, 160))
         self.menu_img = pygame.transform.scale(self.menu_img, (250, 300))
-        self.usb = pygame.transform.scale(self.usb, (80, 30))
 
     def show_background(self):
         self.screen.blit(self.background, (self.background_pos, 0))
         self.screen.blit(self.background, (self.background_pos + 1000, 0))
 
-    def show_ground(self):
-        self.screen.blit(self.ground, (self.ground_pos, 630))
-        self.screen.blit(self.ground, (self.ground_pos + 1000, 630))
+    # def show_ground(self):
+    #     self.screen.blit(self.ground, (self.ground_pos, 630))
+    #     self.screen.blit(self.ground, (self.ground_pos + 1000, 630))
 
     def move_location(self, speed):
         self.ground_pos -= speed
@@ -76,7 +75,7 @@ class Game:
             self.background_pos = 0
 
     def show_bird(self):
-        # pygame.draw.rect(self.screen, (255, 0, 0), self.bird_rect)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.bird_rect)
         self.screen.blit(self.rotated_bird, self.bird_rect)
 
     def update_bird(self):
@@ -94,7 +93,7 @@ class Game:
 
     def add_pipe(self):
         random_pipe_pos = random.choice(self.pipes_height)
-        bottom_pipe = pygame.Rect(1050, random_pipe_pos, 70, 693)
+        bottom_pipe = pygame.Rect(1050, random_pipe_pos, 1, 650)
         top_pipe = pygame.Rect(1050, random_pipe_pos-850, 70, 650)
         self.pipes.append(bottom_pipe)
         self.pipes.append(top_pipe)
@@ -108,11 +107,15 @@ class Game:
     def show_pipes(self):
         for pipe in self.pipes:
             if pipe.bottom >= 700:
-                # pygame.draw.rect(self.screen, (0, 0, 255), pipe)
+                pipe_hitbox = pygame.Rect(pipe.left, pipe.top, self.bottom_pipe.get_width(),
+                                          self.bottom_pipe.get_height())  # Create hitbox based on image dimensions
+                pygame.draw.rect(self.screen, (0, 0, 255), pipe_hitbox, 2)  # Draw hitbox with a border
                 self.screen.blit(self.bottom_pipe, pipe)
             else:
                 flip_pipe = pygame.transform.flip(self.bottom_pipe, False, True)
-                # pygame.draw.rect(self.screen, (0, 0, 255), pipe)
+                pipe_hitbox = pygame.Rect(pipe.left, pipe.top, flip_pipe.get_width(),
+                                          flip_pipe.get_height())  # Create hitbox for flipped pipe
+                pygame.draw.rect(self.screen, (0, 0, 255), pipe_hitbox, 2)  # Draw hitbox with a border
                 self.screen.blit(flip_pipe, pipe)
 
     def check_collision(self):
@@ -121,7 +124,7 @@ class Game:
                 self.active = False
                 self.game_over_sound_play()
 
-        if self.bird_rect.top <= -10 or self.bird_rect.bottom >= 650:
+        if self.bird_rect.top <= -10 or self.bird_rect.bottom >= 720:
             self.active = False
             self.game_over_sound_play()
 
@@ -175,7 +178,7 @@ class Game:
             self.get_fps()
             self.screen.blit(self.menu_img, (380, 50))
 
-            self.show_ground()
+            # self.show_ground()
             self.author()
             self.move_location(0.1)
 
@@ -194,14 +197,12 @@ class Game:
             if play_rect.collidepoint(mouse_pos):
                 pygame.draw.rect(self.screen, (112, 128, 144), play_rect, border_radius=25)
                 self.screen.blit(play_button, (play_rect.centerx-40, play_rect.centery - 15))
-                self.screen.blit(self.usb, (300, 410))
                 if mouse_click[0]:
                     self.menu_trigger = False
 
             if skins_rect.collidepoint(mouse_pos):
                 pygame.draw.rect(self.screen, (112, 128, 144), skins_rect, border_radius=25)
                 self.screen.blit(skins_button, (skins_rect.centerx - 45, skins_rect.centery - 15))
-                self.screen.blit(self.usb, (300, 480))
                 if mouse_click[0]:
                     self.skins_trigger = True
                     self.change_skin()
@@ -209,7 +210,6 @@ class Game:
             if quit_rect.collidepoint(mouse_pos):
                 pygame.draw.rect(self.screen, (112, 128, 144), quit_rect, border_radius=25)
                 self.screen.blit(quit_button, (quit_rect.centerx - 40, quit_rect.centery - 15))
-                self.screen.blit(self.usb, (300, 550))
                 if mouse_click[0]:
                     self.menu_trigger = False
                     pygame.quit()
@@ -235,14 +235,17 @@ class Game:
             self.screen.blit(FPS_str, FPS_RECT)
 
     def author(self):
-        author_name = self.font.render("Created by Rasik", True, (255, 255, 255))
-        rect = pygame.Rect(700, 660, 40, 10)
+        author_name = self.font.render("Created by Amir, Rassul, Kaminur and Alima", True, (255, 255, 255))
+        rect = pygame.Rect(290, 660, 40, 10)
         self.screen.blit(author_name, rect)
 
     def play_sounds(self):
-        sound = self.sounds[random.randint(1, len(self.sounds_list))]
-        if round(self.score, 2) % 5 == 0 and self.score and self.active:
-            sound.play()
+        if self.sounds_list:
+            if round(self.score, 2) % 20 == 0 and self.score and self.active:
+                self.sounds["20_score"].play()
+                return
+            if round(self.score, 2) % 5 == 0 and self.score and self.active:
+                self.sounds["5_score"].play()
 
     def game_over_sound_play(self):
         sound = self.game_over_sounds[random.randint(1, len(self.game_over_sounds_list))]
@@ -253,7 +256,8 @@ class Game:
 
         back_button_rect = pygame.Rect(30, 50, 100, 45)
         rect = pygame.Rect(150, 90, 700, 500)
-        skin = self.skins[3]
+        skin_number = random.randint(1, len(self.skins))
+        skin = self.skins[skin_number]
 
         while self.skins_trigger:
             for event in pygame.event.get():
@@ -264,7 +268,7 @@ class Game:
             self.show_background()
             self.get_fps()
 
-            self.show_ground()
+            # self.show_ground()
             self.author()
             self.move_location(0.1)
 

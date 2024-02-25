@@ -1,39 +1,57 @@
 import random
+import os
 
 import pygame
 import sys
 from game import Game
 from pygame import mixer
-import os
+
+import conf
 
 pygame.init()
 mixer.init()
 screen = pygame.display.set_mode((1000, 720))
-pygame.display.set_caption("CHINUR")
+pygame.display.set_caption("Pterodactyl Quest")
 
 path = os.getcwd()
 
-icon = pygame.image.load(fr"{path}\images\menu_pick.jpg")
+icon = pygame.image.load(conf.icon)
 pygame.display.set_icon(icon)
 
 clock = pygame.time.Clock()
 
-mixer.music.load("music.mp3")
+mixer.music.load(conf.theme)
 mixer.music.set_volume(0.2)
 mixer.music.play(loops=-1)
 
-#sounds
-sounds = os.listdir(fr"{path}\sounds")
-game_over_sounds = os.listdir(fr"{path}\game_over_sounds")
+# Sounds
+sounds_path = conf.sounds
+game_over_sounds = os.listdir(conf.game_over_sounds)
 
-#skins
-skins = list(filter(lambda x: x[-4:] == ".png", os.listdir(fr"{path}\images\skins")))
+# Skins
+skins = conf.skins
+main_skin = conf.main_skin
 
+# Background
+background = conf.background
+obstacle = conf.obstacle
 
-game = Game( fr"{path}\images\skins\sprite_chnur.png", fr"{path}\images\kabel.png", fr"{path}\images\school.jpg",  fr"{path}\images\floor.jpg",  fr"{path}\images\final_pixel_chnur.png",  fr"{path}\images\usb_c.png", screen, clock, sounds, game_over_sounds, skins)
+# Menu pick
+menu_pick = conf.menu_image
+
+game = Game( main_skin,
+             obstacle,
+             background,
+             menu_pick, # Menu image
+             screen,
+             clock,
+             game_over_sounds,
+             skins
+             )
+
 game.resize_images()
 
-game.sounds[random.randint(1, len(sounds))].play()
+# game.sounds[random.randint(1, len(sounds))].play()
 
 while game.menu_trigger or game.skins_trigger:
     game.menu()
@@ -41,7 +59,7 @@ while game.menu_trigger or game.skins_trigger:
 
 
 SPAWNPIPE = pygame.USEREVENT
-pygame.time.set_timer(SPAWNPIPE, 1000)
+pygame.time.set_timer(SPAWNPIPE, 2000)
 
 while True:
     for event in pygame.event.get():
@@ -54,9 +72,11 @@ while True:
                 game.flap()
 
             if event.key == pygame.K_SPACE and not game.active:
+                mixer.music.set_volume(0.2)
                 game.restart_game()
 
             if not game.active and event.key == pygame.K_ESCAPE:
+                mixer.music.set_volume(0.2)
                 game.active = False
                 game.menu_trigger = True
                 game.menu()
@@ -76,9 +96,10 @@ while True:
         game.play_sounds()
     else:
         game.game_over((255, 255, 255))
+        mixer.music.set_volume(0.0)
 
     game.get_fps()
-    game.show_ground()
+    # game.show_ground()
     game.move_location(1)
 
     pygame.display.update()
