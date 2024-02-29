@@ -9,8 +9,8 @@ import conf
 
 pygame.init()
 mixer.init()
-screen = pygame.display.set_mode((1000, 720))
-pygame.display.set_caption("Pterodactyl Quest")
+screen = pygame.display.set_mode((1000, 700))
+pygame.display.set_caption("Cosmic Glide: UFO Adventure")
 
 path = os.getcwd()
 
@@ -33,19 +33,23 @@ main_skin = conf.main_skin
 
 # Background
 backgrounds = conf.backgrounds
-obstacle = conf.obstacle
+obstacles_path = conf.obstacle
+dead_animation_path = conf.dead_animation
+explosion = conf.explosion_sound
 
 # Menu pick
 menu_pick = conf.menu_image
 
 game = Game( main_skin,
-             obstacle,
+             obstacles_path,
              backgrounds,
              menu_pick, # Menu image
              screen,
              clock,
              game_over_sounds,
-             skins
+             skins,
+             dead_animation_path,
+             explosion
              )
 
 game.resize_images()
@@ -58,12 +62,14 @@ while game.menu_trigger or game.skins_trigger or game.difficult_trigger:
 
 SPAWNPIPE = pygame.USEREVENT
 
-SPAWNPIPE_TIME = {
-    "easy": 1800,
-    "medium": 1100,
-    "hard": 600
-}
-pygame.time.set_timer(SPAWNPIPE, SPAWNPIPE_TIME[game.level])
+
+pygame.time.set_timer(SPAWNPIPE, 1000)
+
+LOCATION_SPEED = {
+        "easy": 2,
+        "medium": 4,
+        "hard": 7
+    }
 
 while True:
     for event in pygame.event.get():
@@ -98,17 +104,13 @@ while True:
         game.update_score()
         game.show_score("playing", (255, 255, 255))
         game.play_sounds()
+        game.move_location(LOCATION_SPEED[game.level])
     else:
         game.game_over((255, 255, 255))
         mixer.music.set_volume(0.0)
+        game.move_location(0.1)
 
-    game.get_fps()
-    LOCATION_SPEED = {
-        "easy": 2,
-        "medium": 5,
-        "hard": 7
-    }
-    game.move_location(LOCATION_SPEED[game.level])
+    # game.get_fps()
 
     pygame.display.update()
-    clock.tick(120)
+    clock.tick_busy_loop(120)
