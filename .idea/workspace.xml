@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fd9547b7-09ec-43b8-94fc-ec752821e7da" name="Changes" comment="" />
+    <list default="true" id="fd9547b7-09ec-43b8-94fc-ec752821e7da" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/Flappy-Bird/conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/dead_animation/1 — копия.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/dead_animation/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/Flappy-Bird/game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/level/kabel.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/level/locations/jungle.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/level/locations/night_forest.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/level/locations/volcano.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/level/pipe.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/menu_pick.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/menu_pick_2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/images/skins/pterodactyl.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Flappy-Bird/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Flappy-Bird/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,6 +70,10 @@
       <workItem from="1708860461126" duration="3686000" />
       <workItem from="1708864610095" duration="16386000" />
       <workItem from="1708888974550" duration="3669000" />
+      <workItem from="1708998900663" duration="940000" />
+      <workItem from="1708999924169" duration="2043000" />
+      <workItem from="1709039482289" duration="593000" />
+      <workItem from="1709192297833" duration="16600000" />
     </task>
     <servers />
   </component>
@@ -73,8 +92,9 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/python_game_endterm$game.coverage" NAME="game Coverage Results" MODIFIED="1708780032542" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flappy-Bird" />
+    <SUITE FILE_PATH="coverage/python_game_endterm$game.coverage" NAME="game Coverage Results" MODIFIED="1709199632290" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flappy-Bird" />
     <SUITE FILE_PATH="coverage/python_game_endterm$conf.coverage" NAME="conf Coverage Results" MODIFIED="1708761758033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flappy-Bird" />
-    <SUITE FILE_PATH="coverage/python_game_endterm$main.coverage" NAME="main Coverage Results" MODIFIED="1708892953580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flappy-Bird" />
+    <SUITE FILE_PATH="coverage/python_game_endterm$main.coverage" NAME="main Coverage Results" MODIFIED="1709209547301" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flappy-Bird" />
+    <SUITE FILE_PATH="coverage/python_game_endterm$test.coverage" NAME="test Coverage Results" MODIFIED="1709001132527" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flappy-Bird" />
   </component>
 </project>
