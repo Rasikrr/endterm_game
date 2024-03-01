@@ -40,17 +40,21 @@ explosion = conf.explosion_sound
 # Menu pick
 menu_pick = conf.menu_image
 
-game = Game( main_skin,
-             obstacles_path,
-             backgrounds,
-             menu_pick, # Menu image
-             screen,
-             clock,
-             game_over_sounds,
-             skins,
-             dead_animation_path,
-             explosion
-             )
+try:
+    game = Game( main_skin,
+                 obstacles_path,
+                 backgrounds,
+                 menu_pick, # Menu image
+                 screen,
+                 clock,
+                 game_over_sounds,
+                 skins,
+                 dead_animation_path,
+                 explosion
+                 )
+except FileNotFoundError:
+    print("Please check the paths to media files and pictures")
+    exit()
 
 game.resize_images()
 

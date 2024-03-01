@@ -7,7 +7,7 @@ root = Path(os.getcwd())
 icon = root/"images"/"menu_pick_2.png"
 
 skins = root/"images"/"skins"
-main_skin = skins/"ufo2.png"
+main_skin = skins/"ufo.png"
 
 
 sounds = root/"sounds"
